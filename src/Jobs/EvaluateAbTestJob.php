@@ -4,6 +4,7 @@ namespace DanPascu\FilamentEmailCampaigns\Jobs;
 
 use DanPascu\FilamentEmailCampaigns\Enums\CampaignStatus;
 use DanPascu\FilamentEmailCampaigns\Models\Campaign;
+use DanPascu\FilamentEmailCampaigns\Models\Scopes\TenantScope;
 use DanPascu\FilamentEmailCampaigns\Services\AbTestEvaluator;
 use DanPascu\FilamentEmailCampaigns\Services\CampaignRecipientResolver;
 use Illuminate\Bus\Queueable;
@@ -23,22 +24,24 @@ class EvaluateAbTestJob implements ShouldQueue
 
     public function handle(AbTestEvaluator $evaluator, CampaignRecipientResolver $resolver): void
     {
-        $campaign = Campaign::find($this->campaignId);
+        TenantScope::withoutScoping(function () use ($evaluator, $resolver): void {
+            $campaign = Campaign::find($this->campaignId);
 
-        if (! $campaign || $campaign->status !== CampaignStatus::Sending) {
-            return;
-        }
+            if (! $campaign || $campaign->status !== CampaignStatus::Sending) {
+                return;
+            }
 
-        $winner = $evaluator->evaluate($campaign);
+            $winner = $evaluator->evaluate($campaign);
 
-        if (! $winner) {
-            return;
-        }
+            if (! $winner) {
+                return;
+            }
 
-        foreach ($resolver->resolve($campaign) as $subscriber) {
-            SendCampaignToSubscriberJob::dispatch($campaign->id, $winner->id, $subscriber->id);
-        }
+            foreach ($resolver->resolve($campaign) as $subscriber) {
+                SendCampaignToSubscriberJob::dispatch($campaign->id, $winner->id, $subscriber->id);
+            }
 
-        $campaign->update(['status' => CampaignStatus::Sent, 'sent_at' => now()]);
+            $campaign->update(['status' => CampaignStatus::Sent, 'sent_at' => now()]);
+        });
     }
 }

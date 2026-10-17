@@ -18,8 +18,15 @@ te bazezi pe el în producție.
 ## Ce există acum
 
 - **Multi-tenancy** — fiecare model (liste, abonați, campanii, furnizori,
-  automatizări, ...) apartine unui tenant. Se conectează la sistemul de tenancy al
-  Filament (funcționează cu orice model de tenant folosește deja panoul tău).
+  automatizări, ...) apartine unui tenant. Funcționează în două moduri:
+  - cu tenancy-ul Filament (`->tenant(...)` pe panou), ca până acum;
+  - **fără tenancy Filament** — `FilamentEmailCampaignsPlugin::make()->resolveTenantUsing(fn () => ...)`
+    (sau, pentru cod din afara panoului, `'tenant' => ['resolver' => SomeInvokableClass::class]`
+    în config), pentru aplicații cu propriul sistem de tenancy (ex. un `client_id`
+    pe utilizator). Un singur `TenantScope` global, aplicat automat pe orice model cu
+    `tenant_id`, filtrează după tenant-ul curent indiferent de mod, și nu filtrează
+    nimic când nu există un tenant curent (job-uri, comenzi, un super-admin). Vezi
+    `Support\TenantResolver`.
 - **Furnizori de email** — contract `EspDriver` extensibil; **Mailgun** este singurul
   driver implementat momentan. Credențialele sunt stocate criptat, per tenant.
 - **Liste & abonați** — liste, abonați, etichete (tags) și un constructor de segmente
@@ -105,6 +112,30 @@ depășești limitele furnizorului), timpul de așteptare implicit pentru testul
 comutatoarele de tracking, și harta `providers` (clasa driver per furnizor) — acesta e
 punctul de extensie pentru adăugarea altui furnizor mai târziu (implementezi
 `DanPascu\FilamentEmailCampaigns\Contracts\EspDriver` și îl adaugi în hartă).
+
+### Mod fără tenancy Filament
+
+Dacă aplicația ta nu folosește `->tenant(...)` pe panoul Filament, ai două variante
+echivalente pentru a spune pachetului care e tenant-ul curent:
+
+```php
+// în Panel Provider, alături de ->plugin(...)
+\DanPascu\FilamentEmailCampaigns\FilamentEmailCampaignsPlugin::make()
+    ->resolveTenantUsing(fn (): int|string|null => auth()->user()?->client_id);
+```
+
+```php
+// config/filament-email-campaigns.php — pentru cod care rulează în afara
+// panoului (job-uri, comenzi, webhook-uri) și nu are context de autentificare
+'tenant' => [
+    'resolver' => App\Support\CurrentClientResolver::class, // o clasă invocabilă: __invoke(): int|string|null
+],
+```
+
+Codul pachetului care rulează în afara panoului (trimiterea campaniilor, webhook-urile,
+rutele de tracking, comenzile de scheduling) nu depinde niciodată de `auth()` sau de
+resolver: identifică înregistrările explicit, după id, indiferent de tenant-ul curent
+(`Models\Scopes\TenantScope::withoutScoping(...)`).
 
 ## Ce urmează
 

@@ -21,7 +21,13 @@ return new class extends Migration
             $table->json('extra_attributes')->nullable();
             $table->timestamps();
 
-            $table->unique([config('filament-email-campaigns.tenant.foreign_key', 'tenant_id'), 'email']);
+            // Explicit, short, fixed name: the tenant foreign key is
+            // configurable, so a default (auto-generated) index name here
+            // could grow past MySQL's 64-character identifier limit.
+            $table->unique(
+                [config('filament-email-campaigns.tenant.foreign_key', 'tenant_id'), 'email'],
+                'ec_subscribers_tenant_email_unique',
+            );
         });
     }
 
