@@ -13,7 +13,6 @@ use DanPascu\FilamentEmailCampaigns\Models\EmailList;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
-use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
@@ -78,17 +77,6 @@ class EmailListResource extends Resource
                         ->preload(),
                     Toggle::make('requires_confirmation')
                         ->label(__('filament-email-campaigns::translations.fields.require_double_opt_in'))
-                        ->live()
-                        ->columnSpanFull(),
-                    TextInput::make('confirmation_subject')
-                        ->label(__('filament-email-campaigns::translations.fields.confirmation_subject'))
-                        ->placeholder(__('filament-email-campaigns::translations.confirmation.default_subject', ['list' => '']))
-                        ->visible(fn (callable $get): bool => (bool) $get('requires_confirmation'))
-                        ->columnSpanFull(),
-                    RichEditor::make('confirmation_body')
-                        ->label(__('filament-email-campaigns::translations.fields.confirmation_body'))
-                        ->helperText(__('filament-email-campaigns::translations.helper_text.confirmation_body'))
-                        ->visible(fn (callable $get): bool => (bool) $get('requires_confirmation'))
                         ->columnSpanFull(),
                 ]),
         ]);

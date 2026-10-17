@@ -5,7 +5,6 @@ namespace DanPascu\FilamentEmailCampaigns\Models;
 use DanPascu\FilamentEmailCampaigns\Enums\AutomationTriggerType;
 use DanPascu\FilamentEmailCampaigns\Enums\SubscriptionStatus;
 use DanPascu\FilamentEmailCampaigns\Services\AutomationEnroller;
-use DanPascu\FilamentEmailCampaigns\Services\ConfirmationMailer;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\Pivot;
 
@@ -47,10 +46,6 @@ class SubscriberList extends Pivot
             // created pivot's status always counts as "changed" too.
             if (! $pivot->wasRecentlyCreated && ! $pivot->wasChanged('status')) {
                 return;
-            }
-
-            if ($pivot->status === SubscriptionStatus::Unconfirmed) {
-                app(ConfirmationMailer::class)->sendIfRequired($pivot);
             }
 
             $triggerType = match ($pivot->status) {

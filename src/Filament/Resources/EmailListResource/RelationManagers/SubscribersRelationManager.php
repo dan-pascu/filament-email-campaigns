@@ -3,15 +3,12 @@
 namespace DanPascu\FilamentEmailCampaigns\Filament\Resources\EmailListResource\RelationManagers;
 
 use DanPascu\FilamentEmailCampaigns\Enums\SubscriptionStatus;
-use DanPascu\FilamentEmailCampaigns\Services\ConfirmationMailer;
-use Filament\Actions\Action;
 use Filament\Actions\AttachAction;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DetachAction;
 use Filament\Actions\DetachBulkAction;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
-use Filament\Notifications\Notification;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\SelectColumn;
@@ -68,17 +65,6 @@ class SubscribersRelationManager extends RelationManager
                     ]),
             ])
             ->recordActions([
-                Action::make('resendConfirmation')
-                    ->label(__('filament-email-campaigns::translations.actions.resend_confirmation'))
-                    ->visible(fn ($record): bool => $record->pivot->status === SubscriptionStatus::Unconfirmed)
-                    ->action(function ($record): void {
-                        app(ConfirmationMailer::class)->send($this->getOwnerRecord(), $record);
-
-                        Notification::make()
-                            ->title(__('filament-email-campaigns::translations.notifications.confirmation_resent'))
-                            ->success()
-                            ->send();
-                    }),
                 DetachAction::make(),
                 DeleteAction::make(),
             ])
