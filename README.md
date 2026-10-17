@@ -27,8 +27,11 @@ te bazezi pe el în producție.
     `tenant_id`, filtrează după tenant-ul curent indiferent de mod, și nu filtrează
     nimic când nu există un tenant curent (job-uri, comenzi, un super-admin). Vezi
     `Support\TenantResolver`.
-- **Furnizori de email** — contract `EspDriver` extensibil; **Mailgun** este singurul
-  driver implementat momentan. Credențialele sunt stocate criptat, per tenant.
+- **Furnizori de email** — contract `EspDriver` extensibil, cu șase drivere
+  implementate: **Mailgun**, **Amazon SES**, **Postmark**, **Brevo**, **SendGrid**,
+  **Resend** — fiecare trimite direct prin HTTP (fără SDK-uri), verifică semnătura
+  propriului webhook și mapează evenimentele la `CampaignEventType`. Credențialele sunt
+  stocate criptat, per tenant. Vezi secțiunea „Furnizori ESP" de mai jos.
 - **Liste & abonați** — liste, abonați, etichete (tags) și un constructor vizual de
   segmente (grupuri de condiții combinate AND/OR, pe email/nume/etichete/data abonării/
   atribute extra, cu previzualizare live a numărului de potriviri). Vezi secțiunea
@@ -250,13 +253,31 @@ Formatul JSON existent (`Segment::conditions`, un singur grup implicit de reguli
 compatibil — `Segment::matches()` înțelege ambele forme — iar segmentele vechi se
 „urcă" automat la forma nouă (cu grupuri) când le editezi din panou.
 
+## Furnizori ESP
+
+Din **Furnizori de email**, alege furnizorul din listă — formularul arată automat doar
+câmpurile de credențiale relevante pentru el:
+
+| Furnizor | Credențiale | Verificare webhook |
+| --- | --- | --- |
+| Mailgun | domeniu, cheie API privată, regiune | semnătură HMAC-SHA256 (timestamp+token) |
+| Amazon SES | access key ID, secret access key, regiune AWS | evenimentele vin prin notificări Amazon SNS; semnătura plicului SNS e verificată cu certificatul de pe `SigningCertURL` (doar domenii `amazonaws.com`) |
+| Postmark | server token | credențiale HTTP Basic Auth incluse în URL-ul webhook-ului din Postmark (stocate ca `user:parolă` în "Cheie de semnare webhook") |
+| Brevo | cheie API | un token partajat trimis ca `?token=...` în query string-ul URL-ului webhook-ului |
+| SendGrid | cheie API | semnătură ECDSA (P-256/SHA-256); cheia publică din dashboard-ul SendGrid se pune în "Cheie de semnare webhook" |
+| Resend | cheie API | webhook-uri semnate prin Svix (HMAC-SHA256); secretul `whsec_...` din Resend se pune în "Cheie de semnare webhook" |
+
+Toate cele șase trimit prin HTTP direct (fără SDK-uri AWS/Twilio/etc.) — Amazon SES
+folosește un semnator SigV4 propriu (`Support\AwsSigV4Signer`), scris fără dependențe
+noi. Corelarea unui eveniment de webhook cu trimiterea care l-a generat (`CampaignSend`)
+se face fie prin `send_id` (transmis ca metadată/tag specifică fiecărui furnizor și
+primită înapoi în webhook), fie, ca rezervă, prin id-ul de mesaj al furnizorului.
+
 ## Ce urmează
 
 În ordine aproximativă după cât de apropiate sunt de ce ar trebui să facă un modul
 complet de campanii email:
 
-- **Mai mulți furnizori ESP** — Postmark, SES, SendGrid, Brevo, Resend. Contractul
-  `EspDriver` există deja pentru asta; doar Mailgun e implementat.
 - **Formular public de abonare încorporabil** — import/export CSV și API-ul programatic
   (`EmailCampaigns::subscribe()`) există deja; rămâne un formular HTML de abonare
   pe care îl poți încorpora pe un site public, cu propriul flux de confirmare.
@@ -299,6 +320,12 @@ complet de campanii email:
   (`Segment::matches()`, formatul de conditions, serviciul de previzualizare), dar nu a
   fost verificat vizual într-un browser real (nu există deocamdată un mediu de testare
   cu browser pentru acest pachet).
+- Cele cinci drivere ESP noi (SES, Postmark, Brevo, SendGrid, Resend) sunt verificate
+  prin teste automate (cereri HTTP simulate cu `Http::fake()`, verificare de semnătură
+  cu chei criptografice generate în test), dar **nu** au fost testate împotriva unui
+  cont real al furnizorului respectiv — nu există credențiale/acces la rețea pentru asta
+  în acest mediu. Formatul cererilor și al verificării semnăturii urmează documentația
+  publică a fiecărui furnizor, dar merită un test cu un cont real înainte de producție.
 
 ## Traduceri
 
