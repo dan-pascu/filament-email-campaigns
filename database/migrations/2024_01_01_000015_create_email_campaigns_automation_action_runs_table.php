@@ -11,7 +11,8 @@ return new class extends Migration
         Schema::create('email_campaigns_automation_action_runs', function (Blueprint $table): void {
             $table->id();
             $table->foreignId('automation_id')->constrained('email_campaigns_automations')->cascadeOnDelete();
-            $table->foreignId('automation_action_id')->constrained('email_campaigns_automation_actions')->cascadeOnDelete();
+            // Explicit name: the default one is over MySQL's 64-character limit.
+            $table->foreignId('automation_action_id')->constrained('email_campaigns_automation_actions', indexName: 'email_campaigns_action_runs_action_id_foreign')->cascadeOnDelete();
             $table->foreignId('subscriber_id')->constrained('email_campaigns_subscribers')->cascadeOnDelete();
             $table->timestamp('run_at');
             $table->timestamp('completed_at')->nullable();

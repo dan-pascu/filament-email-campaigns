@@ -18,7 +18,8 @@ return new class extends Migration
             $table->timestamp('unsubscribed_at')->nullable();
             $table->timestamps();
 
-            $table->unique(['subscriber_id', 'email_list_id']);
+            // Explicit name: the default one is over MySQL's 64-character limit.
+            $table->unique(['subscriber_id', 'email_list_id'], 'email_campaigns_subscriber_lists_unique');
         });
     }
 
