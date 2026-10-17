@@ -190,6 +190,10 @@ return [
             'title' => 'Te-ai dezabonat',
             'body' => ':email nu va mai primi emailuri din ":list".',
         ],
+        'confirmed' => [
+            'title' => 'Abonare confirmată',
+            'body' => ':email este acum confirmat pe ":list". Mulțumim!',
+        ],
     ],
 
     'enums' => [

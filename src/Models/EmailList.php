@@ -25,6 +25,8 @@ class EmailList extends Model
         'default_reply_to_email',
         'email_provider_id',
         'requires_confirmation',
+        'confirmation_subject',
+        'confirmation_body',
     ];
 
     protected $casts = [
