@@ -75,6 +75,11 @@ return [
     */
     'providers' => [
         'mailgun' => DanPascu\FilamentEmailCampaigns\Drivers\MailgunDriver::class,
+        'ses' => DanPascu\FilamentEmailCampaigns\Drivers\SesDriver::class,
+        'postmark' => DanPascu\FilamentEmailCampaigns\Drivers\PostmarkDriver::class,
+        'brevo' => DanPascu\FilamentEmailCampaigns\Drivers\BrevoDriver::class,
+        'sendgrid' => DanPascu\FilamentEmailCampaigns\Drivers\SendGridDriver::class,
+        'resend' => DanPascu\FilamentEmailCampaigns\Drivers\ResendDriver::class,
     ],
 
     /*

@@ -15,6 +15,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\IconColumn;
@@ -71,16 +72,50 @@ class EmailProviderResource extends Resource
                     TextInput::make('credentials.domain')
                         ->label(__('filament-email-campaigns::translations.fields.sending_domain'))
                         ->placeholder(__('filament-email-campaigns::translations.placeholders.sending_domain_example'))
-                        ->required(),
+                        ->visible(fn (Get $get): bool => $get('provider') === EspProvider::Mailgun->value)
+                        ->required(fn (Get $get): bool => $get('provider') === EspProvider::Mailgun->value),
+                    Select::make('credentials.region')
+                        ->label(__('filament-email-campaigns::translations.fields.region'))
+                        ->options(['us' => 'US', 'eu' => 'EU'])
+                        ->default('us')
+                        ->visible(fn (Get $get): bool => $get('provider') === EspProvider::Mailgun->value),
                     TextInput::make('credentials.api_key')
                         ->label(__('filament-email-campaigns::translations.fields.private_api_key'))
                         ->password()
                         ->revealable()
-                        ->required(),
-                    Select::make('credentials.region')
-                        ->label(__('filament-email-campaigns::translations.fields.region'))
-                        ->options(['us' => 'US', 'eu' => 'EU'])
-                        ->default('us'),
+                        ->visible(fn (Get $get): bool => in_array($get('provider'), [
+                            EspProvider::Mailgun->value,
+                            EspProvider::Brevo->value,
+                            EspProvider::SendGrid->value,
+                            EspProvider::Resend->value,
+                        ], true))
+                        ->required(fn (Get $get): bool => in_array($get('provider'), [
+                            EspProvider::Mailgun->value,
+                            EspProvider::Brevo->value,
+                            EspProvider::SendGrid->value,
+                            EspProvider::Resend->value,
+                        ], true)),
+                    TextInput::make('credentials.server_token')
+                        ->label(__('filament-email-campaigns::translations.fields.server_token'))
+                        ->password()
+                        ->revealable()
+                        ->visible(fn (Get $get): bool => $get('provider') === EspProvider::Postmark->value)
+                        ->required(fn (Get $get): bool => $get('provider') === EspProvider::Postmark->value),
+                    TextInput::make('credentials.access_key_id')
+                        ->label(__('filament-email-campaigns::translations.fields.access_key_id'))
+                        ->visible(fn (Get $get): bool => $get('provider') === EspProvider::Ses->value)
+                        ->required(fn (Get $get): bool => $get('provider') === EspProvider::Ses->value),
+                    TextInput::make('credentials.secret_access_key')
+                        ->label(__('filament-email-campaigns::translations.fields.secret_access_key'))
+                        ->password()
+                        ->revealable()
+                        ->visible(fn (Get $get): bool => $get('provider') === EspProvider::Ses->value)
+                        ->required(fn (Get $get): bool => $get('provider') === EspProvider::Ses->value),
+                    TextInput::make('credentials.aws_region')
+                        ->label(__('filament-email-campaigns::translations.fields.aws_region'))
+                        ->placeholder('us-east-1')
+                        ->visible(fn (Get $get): bool => $get('provider') === EspProvider::Ses->value)
+                        ->required(fn (Get $get): bool => $get('provider') === EspProvider::Ses->value),
                     TextInput::make('webhook_signing_secret')
                         ->label(__('filament-email-campaigns::translations.fields.webhook_signing_key'))
                         ->password()
