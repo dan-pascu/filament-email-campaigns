@@ -92,6 +92,8 @@ return [
         'csv_last_name_column' => 'Last name column',
         'csv_tags_column' => 'Tags column',
         'import_consent' => 'I confirm I have the right to email these addresses.',
+        'confirmation_subject' => 'Confirmation email subject',
+        'confirmation_body' => 'Confirmation email body',
     ],
 
     'helper_text' => [
@@ -104,6 +106,7 @@ return [
         'webhook_signing_key' => "Found on the provider's webhook settings page. Used to verify incoming delivery/bounce/click events.",
         'automation_trigger' => 'What starts this automation for a subscriber.',
         'automation_actions' => 'Steps run in ascending order for every enrolled subscriber.',
+        'confirmation_body' => 'Leave empty to use the default text. Include {confirmation_url} where the confirmation link should go; if you omit it, the link is appended at the end.',
     ],
 
     'sections' => [
@@ -124,6 +127,7 @@ return [
         'import_subscribers' => 'Import subscribers',
         'export_subscribers' => 'Export subscribers',
         'download' => 'Download',
+        'resend_confirmation' => 'Resend confirmation',
     ],
 
     'filters' => [
@@ -143,6 +147,7 @@ return [
         'export_started' => 'Export started. You will be notified when it finishes.',
         'export_finished_title' => 'Export finished: :list',
         'export_finished_body' => 'Your export is ready to download.',
+        'confirmation_resent' => 'Confirmation email resent.',
     ],
 
     'widgets' => [
@@ -169,6 +174,10 @@ return [
         'unsubscribed' => [
             'title' => "You've been unsubscribed",
             'body' => ':email will no longer receive emails from ":list".',
+        ],
+        'confirmed' => [
+            'title' => 'Subscription confirmed',
+            'body' => ':email is now confirmed on ":list". Thanks!',
         ],
     ],
 
@@ -222,6 +231,11 @@ return [
         'csv' => [
             'label' => 'CSV file',
         ],
+    ],
+
+    'confirmation' => [
+        'default_subject' => 'Please confirm your subscription to :list',
+        'default_body' => '<p>Please confirm your subscription to <strong>:list</strong> by clicking the link below:</p><p>{confirmation_url}</p>',
     ],
 
 ];
