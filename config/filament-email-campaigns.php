@@ -89,4 +89,28 @@ return [
     'route' => [
         'prefix' => 'email-campaigns',
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Subscriber sources
+    |--------------------------------------------------------------------------
+    |
+    | Extra places subscribers can be imported from, besides the built-in
+    | CSV upload: class-strings or instances implementing
+    | Contracts\SubscriberSource. Can also be registered at runtime via
+    | FilamentEmailCampaignsPlugin::make()->subscriberSources([...]).
+    */
+    'subscriber_sources' => [],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Storage
+    |--------------------------------------------------------------------------
+    |
+    | Disk used for uploaded import CSVs and generated export files. Must
+    | be shared across every queue worker that can process these jobs.
+    */
+    'storage' => [
+        'disk' => env('FILAMENT_EMAIL_CAMPAIGNS_STORAGE_DISK', 'local'),
+    ],
 ];

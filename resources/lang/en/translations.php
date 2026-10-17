@@ -32,6 +32,11 @@ return [
             'plural_label' => 'Automations',
             'navigation_label' => 'Automations',
         ],
+        'suppressed_email' => [
+            'label' => 'Suppressed email',
+            'plural_label' => 'Suppressed emails',
+            'navigation_label' => 'Suppressed emails',
+        ],
     ],
 
     'fields' => [
@@ -78,6 +83,15 @@ return [
         'minutes_to_wait' => 'Minutes to wait',
         'order' => 'Order',
         'type' => 'Type',
+        'reason' => 'Reason',
+        'source' => 'Source',
+        'source_option' => 'Source option',
+        'csv_file' => 'CSV file',
+        'csv_email_column' => 'Email column',
+        'csv_first_name_column' => 'First name column',
+        'csv_last_name_column' => 'Last name column',
+        'csv_tags_column' => 'Tags column',
+        'import_consent' => 'I confirm I have the right to email these addresses.',
     ],
 
     'helper_text' => [
@@ -107,6 +121,9 @@ return [
     'actions' => [
         'report' => 'Report',
         'send_now' => 'Send now',
+        'import_subscribers' => 'Import subscribers',
+        'export_subscribers' => 'Export subscribers',
+        'download' => 'Download',
     ],
 
     'filters' => [
@@ -120,6 +137,12 @@ return [
 
     'notifications' => [
         'campaign_sending_title' => 'Campaign is being sent',
+        'import_started' => 'Import started. You will be notified when it finishes.',
+        'import_finished_title' => 'Import finished: :list',
+        'import_finished_body' => ':created added, :updated updated, :skipped_suppressed skipped (suppressed), :skipped_unsubscribed skipped (unsubscribed), :invalid invalid.',
+        'export_started' => 'Export started. You will be notified when it finishes.',
+        'export_finished_title' => 'Export finished: :list',
+        'export_finished_body' => 'Your export is ready to download.',
     ],
 
     'widgets' => [
@@ -192,6 +215,12 @@ return [
         ],
         'esp_provider' => [
             'mailgun' => 'Mailgun',
+        ],
+    ],
+
+    'subscriber_sources' => [
+        'csv' => [
+            'label' => 'CSV file',
         ],
     ],
 

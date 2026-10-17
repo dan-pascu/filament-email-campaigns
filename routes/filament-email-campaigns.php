@@ -1,5 +1,6 @@
 <?php
 
+use DanPascu\FilamentEmailCampaigns\Http\Controllers\DownloadExportController;
 use DanPascu\FilamentEmailCampaigns\Http\Controllers\EspWebhookController;
 use DanPascu\FilamentEmailCampaigns\Http\Controllers\TrackClickController;
 use DanPascu\FilamentEmailCampaigns\Http\Controllers\TrackOpenController;
@@ -21,4 +22,8 @@ Route::prefix(config('filament-email-campaigns.route.prefix', 'email-campaigns')
 
     Route::post('webhooks/{provider}', EspWebhookController::class)
         ->name('filament-email-campaigns.webhooks');
+
+    Route::get('exports/download', DownloadExportController::class)
+        ->middleware('signed')
+        ->name('filament-email-campaigns.exports.download');
 });
