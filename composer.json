@@ -1,0 +1,50 @@
+{
+    "name": "dan-pascu/filament-email-campaigns",
+    "description": "Email campaign management (lists, campaigns, A/B testing, automations, stats) as a Filament 5 plugin for Laravel 13.",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Dan Pascu"
+        }
+    ],
+    "keywords": [
+        "filament",
+        "laravel",
+        "email",
+        "campaigns",
+        "newsletter",
+        "mailgun"
+    ],
+    "require": {
+        "php": "^8.2",
+        "filament/filament": "^5.0",
+        "guzzlehttp/guzzle": "^7.8",
+        "illuminate/contracts": "^11.0|^12.0|^13.0",
+        "spatie/laravel-package-tools": "^1.16"
+    },
+    "require-dev": {
+        "orchestra/testbench": "^9.0|^10.0",
+        "pestphp/pest": "^2.19|^3.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "DanPascu\\FilamentEmailCampaigns\\": "src/",
+            "DanPascu\\FilamentEmailCampaigns\\Database\\Factories\\": "database/factories/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "DanPascu\\FilamentEmailCampaigns\\Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "DanPascu\\FilamentEmailCampaigns\\FilamentEmailCampaignsServiceProvider"
+            ]
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}

@@ -1,0 +1,11 @@
+<?php
+
+namespace DanPascu\FilamentEmailCampaigns\Filament\Resources\AutomationResource\Pages;
+
+use DanPascu\FilamentEmailCampaigns\Filament\Resources\AutomationResource;
+use Filament\Resources\Pages\CreateRecord;
+
+class CreateAutomation extends CreateRecord
+{
+    protected static string $resource = AutomationResource::class;
+}
