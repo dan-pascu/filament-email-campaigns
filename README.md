@@ -42,11 +42,15 @@ te bazezi pe el în producție.
 
 ## Instalare într-un proiect existent
 
-1. Adaugă pachetul în `composer.json`:
+1. Adaugă pachetul în `composer.json`. Repo-ul nu are încă un release/tag, așa că
+   trebuie cerută explicit versiunea de dezvoltare:
 
    ```bash
-   composer require dan-pascu/filament-email-campaigns
+   composer require dan-pascu/filament-email-campaigns:@dev
    ```
+
+   (După ce creezi un tag/release pe GitHub — Releases → "Create a new release" →
+   ex. `v0.1.0` — poți cere pachetul normal, cu `composer require dan-pascu/filament-email-campaigns`.)
 
 2. Publică și rulează migrațiile:
 
