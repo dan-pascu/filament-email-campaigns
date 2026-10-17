@@ -29,8 +29,10 @@ te bazezi pe el în producție.
     `Support\TenantResolver`.
 - **Furnizori de email** — contract `EspDriver` extensibil; **Mailgun** este singurul
   driver implementat momentan. Credențialele sunt stocate criptat, per tenant.
-- **Liste & abonați** — liste, abonați, etichete (tags) și un constructor de segmente
-  (grupuri simple de condiții AND/OR pe email/etichete).
+- **Liste & abonați** — liste, abonați, etichete (tags) și un constructor vizual de
+  segmente (grupuri de condiții combinate AND/OR, pe email/nume/etichete/data abonării/
+  atribute extra, cu previzualizare live a numărului de potriviri). Vezi secțiunea
+  „Constructorul de segmente" de mai jos.
 - **Campanii** — conținut rich-text, targetare pe listă + segment, programare
   (`scheduled_at` + o comandă cron la fiecare minut), trimitere manuală ("Trimite acum").
 - **Test A/B** — 2+ variante de conținut, un eșantion configurabil (%) și alegerea
@@ -233,6 +235,21 @@ confirmarea" retrimite emailul manual pentru un abonat neconfirmat. Abonații
 neconfirmați sunt excluși din trimiterile de campanie (`CampaignRecipientResolver`
 rezolvă doar abonați cu statusul `subscribed`).
 
+## Constructorul de segmente
+
+Din tab-ul "Segments" al unei liste, un segment nou se construiește direct din panou,
+fără a scrie JSON de mână: un grup de reguli combinate ȚI/SAU, iar grupurile între ele
+combinate tot ȚI/SAU — ex. „(etichetă = vip ȚI email termină cu @acme.com) SAU
+(etichetă = lead)". Câmpuri disponibile: `email`, `first_name`, `last_name`, `tags`,
+`subscribed_at` (relativ la data abonării pe *această* listă, operatori înainte/după/
+egal, format `AAAA-LL-ZZ`) și orice `extra_attributes.<cheie>` (alege "Personalizat" ca
+câmp). Sub formular apare o previzualizare live cu numărul de abonați care s-ar potrivi
+chiar acum și primii zece, actualizată la fiecare modificare.
+
+Formatul JSON existent (`Segment::conditions`, un singur grup implicit de reguli) rămâne
+compatibil — `Segment::matches()` înțelege ambele forme — iar segmentele vechi se
+„urcă" automat la forma nouă (cu grupuri) când le editezi din panou.
+
 ## Ce urmează
 
 În ordine aproximativă după cât de apropiate sunt de ce ar trebui să facă un modul
@@ -243,9 +260,6 @@ complet de campanii email:
 - **Formular public de abonare încorporabil** — import/export CSV și API-ul programatic
   (`EmailCampaigns::subscribe()`) există deja; rămâne un formular HTML de abonare
   pe care îl poți încorpora pe un site public, cu propriul flux de confirmare.
-- **UI pentru segmente** — segmentele sunt stocate și evaluate (`Segment::matches()`),
-  dar nu există încă o interfață Filament dedicată pentru a le construi; sunt JSON
-  simplu, momentan.
 - **Automatizări cu ramificații** — motorul actual e o listă ordonată, liniară, de
   pași per automatizare. Ramificații/condiții per abonat nu sunt implementate.
 - **Hartă de click-uri, statistici geo/dispozitiv** — evenimentele de click sunt
@@ -281,6 +295,10 @@ complet de campanii email:
   importul/exportul rulează pe un worker de queue separat de procesul web, discul
   trebuie să fie partajat între ele (un disk de rețea/S3), altfel worker-ul nu va găsi
   fișierul încărcat de pe web sau invers.
+- Constructorul de segmente a fost verificat prin teste automate pe logica de bază
+  (`Segment::matches()`, formatul de conditions, serviciul de previzualizare), dar nu a
+  fost verificat vizual într-un browser real (nu există deocamdată un mediu de testare
+  cu browser pentru acest pachet).
 
 ## Traduceri
 

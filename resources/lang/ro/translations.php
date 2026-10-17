@@ -94,6 +94,15 @@ return [
         'import_consent' => 'Confirm că am dreptul de a trimite emailuri către aceste adrese.',
         'confirmation_subject' => 'Subiectul emailului de confirmare',
         'confirmation_body' => 'Conținutul emailului de confirmare',
+        'subscribed_at' => 'Abonat la',
+        'segment_match' => 'Potrivire',
+        'segment_groups' => 'Grupuri',
+        'segment_rules' => 'Reguli',
+        'segment_field' => 'Câmp',
+        'segment_custom_field' => 'Cale câmp personalizat',
+        'segment_operator' => 'Operator',
+        'segment_value' => 'Valoare',
+        'segment_preview' => 'Previzualizare',
     ],
 
     'helper_text' => [
@@ -107,6 +116,8 @@ return [
         'automation_trigger' => 'Ce pornește această automatizare pentru un abonat.',
         'automation_actions' => 'Pașii se execută în ordine crescătoare pentru fiecare abonat înscris.',
         'confirmation_body' => 'Lasă necompletat pentru textul implicit. Include {confirmation_url} unde ar trebui să apară linkul de confirmare; dacă îl omiți, linkul este adăugat automat la final.',
+        'segment_custom_field' => 'Ex: extra_attributes.company',
+        'segment_date_value' => 'Format: AAAA-LL-ZZ',
     ],
 
     'sections' => [
@@ -128,6 +139,8 @@ return [
         'export_subscribers' => 'Exportă abonați',
         'download' => 'Descarcă',
         'resend_confirmation' => 'Retrimite confirmarea',
+        'add_segment_group' => 'Adaugă grup',
+        'add_segment_rule' => 'Adaugă regulă',
     ],
 
     'filters' => [
@@ -148,6 +161,8 @@ return [
         'export_finished_title' => 'Export finalizat: :list',
         'export_finished_body' => 'Exportul tău este pregătit pentru descărcare.',
         'confirmation_resent' => 'Emailul de confirmare a fost retrimis.',
+        'segment_preview_empty' => 'Niciun abonat nu se potrivește încă.',
+        'segment_preview_count' => ':count abonat(i) se potrivesc, ex:',
     ],
 
     'widgets' => [
@@ -236,6 +251,24 @@ return [
     'confirmation' => [
         'default_subject' => 'Confirmă-ți abonarea la :list',
         'default_body' => '<p>Confirmă-ți abonarea la <strong>:list</strong> apăsând pe linkul de mai jos:</p><p>{confirmation_url}</p>',
+    ],
+
+    'segment_match' => [
+        'all' => 'Toate condițiile (ȘI)',
+        'any' => 'Orice condiție (SAU)',
+    ],
+
+    'segment_field' => [
+        'custom' => 'Personalizat (atribut extra)',
+    ],
+
+    'segment_operator' => [
+        'equals' => 'Este egal cu',
+        'contains' => 'Conține',
+        'starts_with' => 'Începe cu',
+        'ends_with' => 'Se termină cu',
+        'before' => 'Înainte de',
+        'after' => 'După',
     ],
 
 ];

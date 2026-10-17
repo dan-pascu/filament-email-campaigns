@@ -8,6 +8,7 @@ use DanPascu\FilamentEmailCampaigns\Filament\Actions\ImportSubscribersAction;
 use DanPascu\FilamentEmailCampaigns\Filament\Resources\EmailListResource\Pages\CreateEmailList;
 use DanPascu\FilamentEmailCampaigns\Filament\Resources\EmailListResource\Pages\EditEmailList;
 use DanPascu\FilamentEmailCampaigns\Filament\Resources\EmailListResource\Pages\ListEmailLists;
+use DanPascu\FilamentEmailCampaigns\Filament\Resources\EmailListResource\RelationManagers\SegmentsRelationManager;
 use DanPascu\FilamentEmailCampaigns\Filament\Resources\EmailListResource\RelationManagers\SubscribersRelationManager;
 use DanPascu\FilamentEmailCampaigns\Models\EmailList;
 use Filament\Actions\DeleteAction;
@@ -133,6 +134,7 @@ class EmailListResource extends Resource
     {
         return [
             SubscribersRelationManager::class,
+            SegmentsRelationManager::class,
         ];
     }
 

@@ -94,6 +94,15 @@ return [
         'import_consent' => 'I confirm I have the right to email these addresses.',
         'confirmation_subject' => 'Confirmation email subject',
         'confirmation_body' => 'Confirmation email body',
+        'subscribed_at' => 'Subscribed at',
+        'segment_match' => 'Match',
+        'segment_groups' => 'Groups',
+        'segment_rules' => 'Rules',
+        'segment_field' => 'Field',
+        'segment_custom_field' => 'Custom field path',
+        'segment_operator' => 'Operator',
+        'segment_value' => 'Value',
+        'segment_preview' => 'Preview',
     ],
 
     'helper_text' => [
@@ -107,6 +116,8 @@ return [
         'automation_trigger' => 'What starts this automation for a subscriber.',
         'automation_actions' => 'Steps run in ascending order for every enrolled subscriber.',
         'confirmation_body' => 'Leave empty to use the default text. Include {confirmation_url} where the confirmation link should go; if you omit it, the link is appended at the end.',
+        'segment_custom_field' => 'E.g. extra_attributes.company',
+        'segment_date_value' => 'Format: YYYY-MM-DD',
     ],
 
     'sections' => [
@@ -128,6 +139,8 @@ return [
         'export_subscribers' => 'Export subscribers',
         'download' => 'Download',
         'resend_confirmation' => 'Resend confirmation',
+        'add_segment_group' => 'Add group',
+        'add_segment_rule' => 'Add rule',
     ],
 
     'filters' => [
@@ -148,6 +161,8 @@ return [
         'export_finished_title' => 'Export finished: :list',
         'export_finished_body' => 'Your export is ready to download.',
         'confirmation_resent' => 'Confirmation email resent.',
+        'segment_preview_empty' => 'No subscribers match yet.',
+        'segment_preview_count' => ':count subscriber(s) match, e.g.:',
     ],
 
     'widgets' => [
@@ -236,6 +251,24 @@ return [
     'confirmation' => [
         'default_subject' => 'Please confirm your subscription to :list',
         'default_body' => '<p>Please confirm your subscription to <strong>:list</strong> by clicking the link below:</p><p>{confirmation_url}</p>',
+    ],
+
+    'segment_match' => [
+        'all' => 'All conditions (AND)',
+        'any' => 'Any condition (OR)',
+    ],
+
+    'segment_field' => [
+        'custom' => 'Custom (extra attribute)',
+    ],
+
+    'segment_operator' => [
+        'equals' => 'Equals',
+        'contains' => 'Contains',
+        'starts_with' => 'Starts with',
+        'ends_with' => 'Ends with',
+        'before' => 'Before',
+        'after' => 'After',
     ],
 
 ];
