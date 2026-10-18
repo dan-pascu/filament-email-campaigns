@@ -333,3 +333,13 @@ Fișierele de traducere sunt în `resources/lang/en/translations.php` și
 `resources/lang/ro/translations.php`. Pentru a adăuga altă limbă, publică-le
 (`php artisan vendor:publish --tag=filament-email-campaigns-translations`), copiază
 fișierul într-un folder nou cu codul limbii respective și tradu valorile.
+
+## Versionare și changelog
+
+De la `v0.1.0`, pachetul urmează [Semantic Versioning](https://semver.org/) — orice
+schimbare care rupe compatibilitatea crește versiunea majoră. Tot ce s-a schimbat
+versiune cu versiune e în [CHANGELOG.md](CHANGELOG.md) (format
+[Keep a Changelog](https://keepachangelog.com/en/1.1.0/)). Instrucțiunea de instalare
+de mai sus cu `:@dev` va deveni `composer require dan-pascu/filament-email-campaigns`
+simplu, de la momentul în care taggul `v0.1.0` există pe `main` (vezi CHANGELOG pentru
+ce conține).
