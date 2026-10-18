@@ -103,6 +103,10 @@ return [
         'segment_operator' => 'Operator',
         'segment_value' => 'Value',
         'segment_preview' => 'Preview',
+        'server_token' => 'Server token',
+        'access_key_id' => 'Access key ID',
+        'secret_access_key' => 'Secret access key',
+        'aws_region' => 'AWS region',
     ],
 
     'helper_text' => [
@@ -239,6 +243,11 @@ return [
         ],
         'esp_provider' => [
             'mailgun' => 'Mailgun',
+            'ses' => 'Amazon SES',
+            'postmark' => 'Postmark',
+            'brevo' => 'Brevo',
+            'sendgrid' => 'SendGrid',
+            'resend' => 'Resend',
         ],
     ],
 

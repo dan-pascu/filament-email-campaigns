@@ -103,6 +103,10 @@ return [
         'segment_operator' => 'Operator',
         'segment_value' => 'Valoare',
         'segment_preview' => 'Previzualizare',
+        'server_token' => 'Token de server',
+        'access_key_id' => 'ID cheie de acces',
+        'secret_access_key' => 'Cheie de acces secretă',
+        'aws_region' => 'Regiune AWS',
     ],
 
     'helper_text' => [
@@ -239,6 +243,11 @@ return [
         ],
         'esp_provider' => [
             'mailgun' => 'Mailgun',
+            'ses' => 'Amazon SES',
+            'postmark' => 'Postmark',
+            'brevo' => 'Brevo',
+            'sendgrid' => 'SendGrid',
+            'resend' => 'Resend',
         ],
     ],
 
