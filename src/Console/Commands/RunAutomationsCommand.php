@@ -2,6 +2,7 @@
 
 namespace DanPascu\FilamentEmailCampaigns\Console\Commands;
 
+use DanPascu\FilamentEmailCampaigns\Models\Scopes\TenantScope;
 use DanPascu\FilamentEmailCampaigns\Services\AutomationRunner;
 use Illuminate\Console\Command;
 
@@ -13,6 +14,9 @@ class RunAutomationsCommand extends Command
 
     public function handle(AutomationRunner $runner): void
     {
-        $runner->runDue();
+        // Advances automations across every tenant, so it must not be
+        // scoped to whatever TenantResolver::current() happens to report
+        // for a console command (usually nothing).
+        TenantScope::withoutScoping(fn () => $runner->runDue());
     }
 }

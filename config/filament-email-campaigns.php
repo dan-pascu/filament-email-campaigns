@@ -10,11 +10,18 @@ return [
     | Every model in this package (lists, subscribers, campaigns, providers,
     | ...) belongs to a tenant. Point these at the tenant model your
     | Filament panel already uses (the model passed to Panel::tenant()).
+    |
+    | If your app doesn't use Filament's panel tenancy at all, set `resolver`
+    | to an invokable class (a class with an `__invoke(): int|string|null`
+    | method) instead, or call
+    | FilamentEmailCampaignsPlugin::make()->resolveTenantUsing(fn () => ...)
+    | when registering the plugin. See Support\TenantResolver.
     */
     'tenant' => [
         'model' => env('FILAMENT_EMAIL_CAMPAIGNS_TENANT_MODEL', 'App\\Models\\Team'),
         'foreign_key' => 'tenant_id',
         'relationship' => 'tenant',
+        'resolver' => null,
     ],
 
     /*

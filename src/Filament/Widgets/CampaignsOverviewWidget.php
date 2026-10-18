@@ -7,7 +7,7 @@ use DanPascu\FilamentEmailCampaigns\Enums\SubscriptionStatus;
 use DanPascu\FilamentEmailCampaigns\Models\Campaign;
 use DanPascu\FilamentEmailCampaigns\Models\EmailList;
 use DanPascu\FilamentEmailCampaigns\Models\Subscriber;
-use Filament\Facades\Filament;
+use DanPascu\FilamentEmailCampaigns\Support\TenantResolver;
 use Filament\Widgets\StatsOverviewWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 
@@ -15,7 +15,7 @@ class CampaignsOverviewWidget extends StatsOverviewWidget
 {
     protected function getStats(): array
     {
-        $tenantId = Filament::getTenant()?->getKey();
+        $tenantId = app(TenantResolver::class)->current();
 
         return [
             Stat::make(

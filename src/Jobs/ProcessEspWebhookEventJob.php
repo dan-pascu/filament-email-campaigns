@@ -6,6 +6,7 @@ use DanPascu\FilamentEmailCampaigns\Enums\CampaignEventType;
 use DanPascu\FilamentEmailCampaigns\Enums\SubscriptionStatus;
 use DanPascu\FilamentEmailCampaigns\Models\CampaignSend;
 use DanPascu\FilamentEmailCampaigns\Models\Link;
+use DanPascu\FilamentEmailCampaigns\Models\Scopes\TenantScope;
 use DanPascu\FilamentEmailCampaigns\Models\SubscriberList;
 use DanPascu\FilamentEmailCampaigns\Models\SuppressedEmail;
 use DanPascu\FilamentEmailCampaigns\Support\EspWebhookEvent;
@@ -26,30 +27,32 @@ class ProcessEspWebhookEventJob implements ShouldQueue
 
     public function handle(): void
     {
-        $send = $this->resolveSend();
+        TenantScope::withoutScoping(function (): void {
+            $send = $this->resolveSend();
 
-        if (! $send) {
-            return;
-        }
+            if (! $send) {
+                return;
+            }
 
-        $link = $this->event->clickedUrl
-            ? Link::query()->where('campaign_id', $send->campaign_id)->where('url', $this->event->clickedUrl)->first()
-            : null;
+            $link = $this->event->clickedUrl
+                ? Link::query()->where('campaign_id', $send->campaign_id)->where('url', $this->event->clickedUrl)->first()
+                : null;
 
-        $send->events()->create([
-            'tenant_id' => $send->tenant_id,
-            'campaign_id' => $send->campaign_id,
-            'link_id' => $link?->id,
-            'type' => $this->event->type->value,
-            'meta' => $this->event->meta,
-            'occurred_at' => $this->event->occurredAt,
-        ]);
+            $send->events()->create([
+                'tenant_id' => $send->tenant_id,
+                'campaign_id' => $send->campaign_id,
+                'link_id' => $link?->id,
+                'type' => $this->event->type->value,
+                'meta' => $this->event->meta,
+                'occurred_at' => $this->event->occurredAt,
+            ]);
 
-        match ($this->event->type) {
-            CampaignEventType::Bounced, CampaignEventType::Complained => $this->suppress($send, $this->event->type),
-            CampaignEventType::Unsubscribed => $this->unsubscribe($send),
-            default => null,
-        };
+            match ($this->event->type) {
+                CampaignEventType::Bounced, CampaignEventType::Complained => $this->suppress($send, $this->event->type),
+                CampaignEventType::Unsubscribed => $this->unsubscribe($send),
+                default => null,
+            };
+        });
     }
 
     protected function resolveSend(): ?CampaignSend

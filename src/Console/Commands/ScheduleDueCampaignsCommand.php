@@ -5,6 +5,7 @@ namespace DanPascu\FilamentEmailCampaigns\Console\Commands;
 use DanPascu\FilamentEmailCampaigns\Enums\CampaignStatus;
 use DanPascu\FilamentEmailCampaigns\Jobs\SendCampaignJob;
 use DanPascu\FilamentEmailCampaigns\Models\Campaign;
+use DanPascu\FilamentEmailCampaigns\Models\Scopes\TenantScope;
 use Illuminate\Console\Command;
 
 class ScheduleDueCampaignsCommand extends Command
@@ -15,9 +16,14 @@ class ScheduleDueCampaignsCommand extends Command
 
     public function handle(): void
     {
-        Campaign::query()
-            ->where('status', CampaignStatus::Scheduled->value)
-            ->where('scheduled_at', '<=', now())
-            ->each(fn (Campaign $campaign) => SendCampaignJob::dispatch($campaign->id));
+        // This intentionally scans every tenant, so it must not be scoped
+        // to whatever TenantResolver::current() happens to report for a
+        // console command (usually nothing).
+        TenantScope::withoutScoping(function (): void {
+            Campaign::query()
+                ->where('status', CampaignStatus::Scheduled->value)
+                ->where('scheduled_at', '<=', now())
+                ->each(fn (Campaign $campaign) => SendCampaignJob::dispatch($campaign->id));
+        });
     }
 }

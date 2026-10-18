@@ -4,6 +4,7 @@ namespace DanPascu\FilamentEmailCampaigns\Jobs;
 
 use DanPascu\FilamentEmailCampaigns\Enums\CampaignStatus;
 use DanPascu\FilamentEmailCampaigns\Models\Campaign;
+use DanPascu\FilamentEmailCampaigns\Models\Scopes\TenantScope;
 use DanPascu\FilamentEmailCampaigns\Services\CampaignRecipientResolver;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -34,35 +35,37 @@ class SendCampaignJob implements ShouldQueue
 
     public function handle(CampaignRecipientResolver $resolver): void
     {
-        $campaign = Campaign::find($this->campaignId);
+        TenantScope::withoutScoping(function () use ($resolver): void {
+            $campaign = Campaign::find($this->campaignId);
 
-        if (! $campaign || ! $campaign->isSendable()) {
-            return;
-        }
+            if (! $campaign || ! $campaign->isSendable()) {
+                return;
+            }
 
-        $campaign->update(['status' => CampaignStatus::Sending]);
+            $campaign->update(['status' => CampaignStatus::Sending]);
 
-        $variants = $campaign->variants;
-        $recipients = $resolver->resolve($campaign);
+            $variants = $campaign->variants;
+            $recipients = $resolver->resolve($campaign);
 
-        if ($campaign->is_ab_test && $variants->count() > 1) {
-            $this->sendAbTestSample($campaign, $variants, $recipients);
+            if ($campaign->is_ab_test && $variants->count() > 1) {
+                $this->sendAbTestSample($campaign, $variants, $recipients);
 
-            EvaluateAbTestJob::dispatch($campaign->id)
-                ->delay(now()->addMinutes(
-                    (int) config('filament-email-campaigns.ab_testing.default_wait_minutes', 240),
-                ));
+                EvaluateAbTestJob::dispatch($campaign->id)
+                    ->delay(now()->addMinutes(
+                        (int) config('filament-email-campaigns.ab_testing.default_wait_minutes', 240),
+                    ));
 
-            return;
-        }
+                return;
+            }
 
-        $variantId = $variants->first()?->id;
+            $variantId = $variants->first()?->id;
 
-        foreach ($recipients as $subscriber) {
-            SendCampaignToSubscriberJob::dispatch($campaign->id, $variantId, $subscriber->id);
-        }
+            foreach ($recipients as $subscriber) {
+                SendCampaignToSubscriberJob::dispatch($campaign->id, $variantId, $subscriber->id);
+            }
 
-        $campaign->update(['status' => CampaignStatus::Sent, 'sent_at' => now()]);
+            $campaign->update(['status' => CampaignStatus::Sent, 'sent_at' => now()]);
+        });
     }
 
     protected function sendAbTestSample(Campaign $campaign, Collection $variants, LazyCollection $recipients): void
