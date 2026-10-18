@@ -67,15 +67,20 @@ te bazezi pe el în producție.
 
 ## Instalare într-un proiect existent
 
-1. Adaugă pachetul în `composer.json`. Repo-ul nu are încă un release/tag, așa că
-   trebuie cerută explicit versiunea de dezvoltare:
+1. Pachetul nu e (încă) pe Packagist, așa că adaugă repo-ul GitHub ca sursă VCS în
+   `composer.json`-ul proiectului tău:
 
-   ```bash
-   composer require dan-pascu/filament-email-campaigns:@dev
+   ```json
+   "repositories": [
+       {"type": "vcs", "url": "https://github.com/dan-pascu/filament-email-campaigns"}
+   ]
    ```
 
-   (După ce creezi un tag/release pe GitHub — Releases → "Create a new release" →
-   ex. `v0.1.0` — poți cere pachetul normal, cu `composer require dan-pascu/filament-email-campaigns`.)
+   apoi cere versiunea taggată:
+
+   ```bash
+   composer require dan-pascu/filament-email-campaigns:^0.1
+   ```
 
 2. Publică și rulează migrațiile:
 
@@ -339,7 +344,5 @@ fișierul într-un folder nou cu codul limbii respective și tradu valorile.
 De la `v0.1.0`, pachetul urmează [Semantic Versioning](https://semver.org/) — orice
 schimbare care rupe compatibilitatea crește versiunea majoră. Tot ce s-a schimbat
 versiune cu versiune e în [CHANGELOG.md](CHANGELOG.md) (format
-[Keep a Changelog](https://keepachangelog.com/en/1.1.0/)). Instrucțiunea de instalare
-de mai sus cu `:@dev` va deveni `composer require dan-pascu/filament-email-campaigns`
-simplu, de la momentul în care taggul `v0.1.0` există pe `main` (vezi CHANGELOG pentru
-ce conține).
+[Keep a Changelog](https://keepachangelog.com/en/1.1.0/)) și în
+[Release-urile GitHub](https://github.com/dan-pascu/filament-email-campaigns/releases).
