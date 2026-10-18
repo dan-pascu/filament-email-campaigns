@@ -3,6 +3,8 @@
 namespace DanPascu\FilamentEmailCampaigns\Filament\Resources;
 
 use BackedEnum;
+use DanPascu\FilamentEmailCampaigns\Filament\Actions\ExportSubscribersAction;
+use DanPascu\FilamentEmailCampaigns\Filament\Actions\ImportSubscribersAction;
 use DanPascu\FilamentEmailCampaigns\Filament\Resources\EmailListResource\Pages\CreateEmailList;
 use DanPascu\FilamentEmailCampaigns\Filament\Resources\EmailListResource\Pages\EditEmailList;
 use DanPascu\FilamentEmailCampaigns\Filament\Resources\EmailListResource\Pages\ListEmailLists;
@@ -105,6 +107,8 @@ class EmailListResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->recordActions([
+                ImportSubscribersAction::make(),
+                ExportSubscribersAction::make(),
                 EditAction::make(),
                 DeleteAction::make(),
             ])

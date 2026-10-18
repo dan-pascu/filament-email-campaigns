@@ -32,6 +32,11 @@ return [
             'plural_label' => 'Automatizări',
             'navigation_label' => 'Automatizări',
         ],
+        'suppressed_email' => [
+            'label' => 'Email suprimat',
+            'plural_label' => 'Emailuri suprimate',
+            'navigation_label' => 'Emailuri suprimate',
+        ],
     ],
 
     'fields' => [
@@ -78,6 +83,15 @@ return [
         'minutes_to_wait' => 'Minute de așteptare',
         'order' => 'Ordine',
         'type' => 'Tip',
+        'reason' => 'Motiv',
+        'source' => 'Sursă',
+        'source_option' => 'Opțiune sursă',
+        'csv_file' => 'Fișier CSV',
+        'csv_email_column' => 'Coloana email',
+        'csv_first_name_column' => 'Coloana prenume',
+        'csv_last_name_column' => 'Coloana nume de familie',
+        'csv_tags_column' => 'Coloana etichete',
+        'import_consent' => 'Confirm că am dreptul de a trimite emailuri către aceste adrese.',
     ],
 
     'helper_text' => [
@@ -107,6 +121,9 @@ return [
     'actions' => [
         'report' => 'Raport',
         'send_now' => 'Trimite acum',
+        'import_subscribers' => 'Importă abonați',
+        'export_subscribers' => 'Exportă abonați',
+        'download' => 'Descarcă',
     ],
 
     'filters' => [
@@ -120,6 +137,12 @@ return [
 
     'notifications' => [
         'campaign_sending_title' => 'Campania este în curs de trimitere',
+        'import_started' => 'Importul a început. Vei fi notificat când se termină.',
+        'import_finished_title' => 'Import finalizat: :list',
+        'import_finished_body' => ':created adăugați, :updated actualizați, :skipped_suppressed omiși (suprimați), :skipped_unsubscribed omiși (dezabonați), :invalid invalizi.',
+        'export_started' => 'Exportul a început. Vei fi notificat când se termină.',
+        'export_finished_title' => 'Export finalizat: :list',
+        'export_finished_body' => 'Exportul tău este pregătit pentru descărcare.',
     ],
 
     'widgets' => [
@@ -192,6 +215,12 @@ return [
         ],
         'esp_provider' => [
             'mailgun' => 'Mailgun',
+        ],
+    ],
+
+    'subscriber_sources' => [
+        'csv' => [
+            'label' => 'Fișier CSV',
         ],
     ],
 

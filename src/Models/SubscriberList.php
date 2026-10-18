@@ -41,7 +41,10 @@ class SubscriberList extends Pivot
     protected static function booted(): void
     {
         static::saved(function (self $pivot): void {
-            if (! $pivot->wasChanged('status')) {
+            // On insert, wasChanged() is always false (Eloquent only
+            // populates the change-tracking list on update), so a freshly
+            // created pivot's status always counts as "changed" too.
+            if (! $pivot->wasRecentlyCreated && ! $pivot->wasChanged('status')) {
                 return;
             }
 

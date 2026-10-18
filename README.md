@@ -46,6 +46,13 @@ te bazezi pe el în producție.
   adaugă etichetă / elimină etichetă / abonează / dezabonează) declanșată când un
   abonat se abonează/dezabonează de la o listă sau primește/pierde o etichetă. Nu este
   un constructor vizual cu ramificații — vezi secțiunea de mai jos.
+- **Surse de abonați, import/export, API programatic** — import CSV cu mapare de
+  coloane, plus un contract `Contracts\SubscriberSource` prin care aplicația găzduitoare
+  poate oferi propriile surse (participanți la un eveniment, un export CRM, ...). Import
+  și export rulează pe queue, cu notificare Filament (bază de date) la final. Pentru cod
+  care nu trece prin panou, fațada `EmailCampaigns::subscribe()`/`unsubscribe()` face
+  același lucru programatic. O listă de suprimare (`SuppressedEmail`) are acum și
+  propria resursă Filament. Vezi secțiunea „Surse de abonați" de mai jos.
 
 ## Instalare într-un proiect existent
 
@@ -137,6 +144,70 @@ rutele de tracking, comenzile de scheduling) nu depinde niciodată de `auth()` s
 resolver: identifică înregistrările explicit, după id, indiferent de tenant-ul curent
 (`Models\Scopes\TenantScope::withoutScoping(...)`).
 
+## Surse de abonați
+
+Pe lângă import CSV (din acțiunea "Importă abonați" de pe o listă, cu mapare de
+coloane configurabilă), aplicația găzduitoare poate oferi propriile surse — de
+exemplu participanții la un eveniment stocat în propriile tale tabele — implementând
+`Contracts\SubscriberSource`:
+
+```php
+use DanPascu\FilamentEmailCampaigns\Contracts\SubscriberSource;
+use DanPascu\FilamentEmailCampaigns\Support\SubscriberData;
+
+class EventAttendeesSource implements SubscriberSource
+{
+    public function key(): string
+    {
+        return 'event_attendees';
+    }
+
+    public function label(): string
+    {
+        return 'Participanți la un eveniment';
+    }
+
+    public function options(int|string|null $tenantId): array
+    {
+        return Event::query()->where('tenant_id', $tenantId)->pluck('name', 'id')->all();
+    }
+
+    public function count(int|string|null $tenantId, ?string $option): int
+    {
+        return Attendee::where('event_id', $option)->count();
+    }
+
+    public function records(int|string|null $tenantId, ?string $option): iterable
+    {
+        foreach (Attendee::where('event_id', $option)->cursor() as $attendee) {
+            yield new SubscriberData(email: $attendee->email, firstName: $attendee->first_name);
+        }
+    }
+}
+```
+
+Înregistrează-o în Panel Provider:
+
+```php
+\DanPascu\FilamentEmailCampaigns\FilamentEmailCampaignsPlugin::make()
+    ->subscriberSources([EventAttendeesSource::class]);
+```
+
+sau direct în config, `'subscriber_sources' => [App\Support\EventAttendeesSource::class]`.
+Sursa apare automat în selectorul de surse din acțiunea de import, alături de CSV, cu
+numărul de înregistrări afișat lângă fiecare opțiune.
+
+Pentru cod care nu trece prin panou (webhook-uri, API-uri proprii, comenzi), fațada
+`EmailCampaigns` abonează/dezabonează programatic, fără job pe queue:
+
+```php
+use DanPascu\FilamentEmailCampaigns\Facades\EmailCampaigns;
+use DanPascu\FilamentEmailCampaigns\Support\SubscriberData;
+
+EmailCampaigns::subscribe($list, new SubscriberData(email: 'client@exemplu.ro', firstName: 'Ion'));
+EmailCampaigns::unsubscribe($list, 'client@exemplu.ro');
+```
+
 ## Ce urmează
 
 În ordine aproximativă după cât de apropiate sunt de ce ar trebui să facă un modul
@@ -146,9 +217,9 @@ complet de campanii email:
   `EspDriver` există deja pentru asta; doar Mailgun e implementat.
 - **Flux de confirmare dublu opt-in** — coloana `EmailList::requires_confirmation`
   există, dar emailul de confirmare + link-ul de confirmare nu sunt încă legate.
-- **Formulare publice de abonare/import & API public** — nu există încă un formular
-  de abonare încorporabil sau import/export CSV; abonații se gestionează doar din
-  panoul de administrare.
+- **Formular public de abonare încorporabil** — import/export CSV și API-ul programatic
+  (`EmailCampaigns::subscribe()`) există deja; rămâne un formular HTML de abonare
+  pe care îl poți încorpora pe un site public, cu propriul flux de confirmare.
 - **UI pentru segmente** — segmentele sunt stocate și evaluate (`Segment::matches()`),
   dar nu există încă o interfață Filament dedicată pentru a le construi; sunt JSON
   simplu, momentan.
@@ -160,8 +231,6 @@ complet de campanii email:
 - **Panou pentru emailuri tranzacționale** — trimiterea funcționează (`TransactionalMail`
   + `AutomationRunner::sendEmail`), dar nu există încă o resursă/UI dedicată pentru a
   le vedea.
-- **Import/export abonați în masă, UI pentru lista de suprimare** — ambele există ca
-  tabele, fără ecrane Filament dedicate încă.
 
 ## Limitări cunoscute
 
@@ -184,6 +253,11 @@ complet de campanii email:
   de teste automate rulează (și e verificată) pe Laravel 12, nu pe 13; `composer.json`
   al pachetului permite în continuare Laravel 13 pentru instalări reale, fiindcă nimic
   de aici nu folosește API-uri schimbate între 12 și 13.
+- Fișierele CSV de import și cele generate la export sunt scrise pe discul Laravel
+  configurat în `filament-email-campaigns.storage.disk` (implicit `local`). Dacă
+  importul/exportul rulează pe un worker de queue separat de procesul web, discul
+  trebuie să fie partajat între ele (un disk de rețea/S3), altfel worker-ul nu va găsi
+  fișierul încărcat de pe web sau invers.
 
 ## Traduceri
 

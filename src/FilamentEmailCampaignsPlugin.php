@@ -7,7 +7,9 @@ use DanPascu\FilamentEmailCampaigns\Filament\Resources\CampaignResource;
 use DanPascu\FilamentEmailCampaigns\Filament\Resources\EmailListResource;
 use DanPascu\FilamentEmailCampaigns\Filament\Resources\EmailProviderResource;
 use DanPascu\FilamentEmailCampaigns\Filament\Resources\SubscriberResource;
+use DanPascu\FilamentEmailCampaigns\Filament\Resources\SuppressedEmailResource;
 use DanPascu\FilamentEmailCampaigns\Filament\Widgets\CampaignsOverviewWidget;
+use DanPascu\FilamentEmailCampaigns\Support\SubscriberSourceRegistry;
 use DanPascu\FilamentEmailCampaigns\Support\TenantResolver;
 use Filament\Contracts\Plugin;
 use Filament\Panel;
@@ -65,6 +67,19 @@ class FilamentEmailCampaignsPlugin implements Plugin
         return $this->tenantResolver;
     }
 
+    /**
+     * Registers extra places subscribers can be imported from, besides the
+     * built-in CSV upload. See Contracts\SubscriberSource.
+     *
+     * @param  array<string|\DanPascu\FilamentEmailCampaigns\Contracts\SubscriberSource>  $sources
+     */
+    public function subscriberSources(array $sources): static
+    {
+        SubscriberSourceRegistry::register($sources);
+
+        return $this;
+    }
+
     public function emailProviderResource(bool $condition = true): static
     {
         $this->hasEmailProviderResource = $condition;
@@ -78,6 +93,7 @@ class FilamentEmailCampaignsPlugin implements Plugin
             EmailListResource::class,
             SubscriberResource::class,
             CampaignResource::class,
+            SuppressedEmailResource::class,
         ];
 
         if ($this->hasEmailProviderResource) {
