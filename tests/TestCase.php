@@ -5,6 +5,7 @@ namespace DanPascu\FilamentEmailCampaigns\Tests;
 use DanPascu\FilamentEmailCampaigns\FilamentEmailCampaignsServiceProvider;
 use DanPascu\FilamentEmailCampaigns\Support\SubscriberSourceRegistry;
 use DanPascu\FilamentEmailCampaigns\Support\TenantResolver;
+use DanPascu\FilamentEmailCampaigns\Tests\Fixtures\FakeEspDriver;
 use DanPascu\FilamentEmailCampaigns\Tests\Fixtures\FixtureSubscriberSource;
 use DanPascu\FilamentEmailCampaigns\Tests\Fixtures\Tenant;
 use Illuminate\Database\Schema\Blueprint;
@@ -23,6 +24,7 @@ abstract class TestCase extends Orchestra
         TenantResolver::resolveUsing(null);
         SubscriberSourceRegistry::reset();
         FixtureSubscriberSource::$records = [];
+        FakeEspDriver::$sent = [];
 
         Schema::create('tenants', function (Blueprint $table): void {
             $table->id();
@@ -57,5 +59,6 @@ abstract class TestCase extends Orchestra
     {
         $app['config']->set('database.default', 'testing');
         $app['config']->set('filament-email-campaigns.tenant.model', Tenant::class);
+        $app['config']->set('app.key', 'base64:'.base64_encode(random_bytes(32)));
     }
 }

@@ -29,8 +29,10 @@ te bazezi pe el în producție.
     `Support\TenantResolver`.
 - **Furnizori de email** — contract `EspDriver` extensibil; **Mailgun** este singurul
   driver implementat momentan. Credențialele sunt stocate criptat, per tenant.
-- **Liste & abonați** — liste, abonați, etichete (tags) și un constructor de segmente
-  (grupuri simple de condiții AND/OR pe email/etichete).
+- **Liste & abonați** — liste, abonați, etichete (tags) și un constructor vizual de
+  segmente (grupuri de condiții combinate AND/OR, pe email/nume/etichete/data abonării/
+  atribute extra, cu previzualizare live a numărului de potriviri). Vezi secțiunea
+  „Constructorul de segmente" de mai jos.
 - **Campanii** — conținut rich-text, targetare pe listă + segment, programare
   (`scheduled_at` + o comandă cron la fiecare minut), trimitere manuală ("Trimite acum").
 - **Test A/B** — 2+ variante de conținut, un eșantion configurabil (%) și alegerea
@@ -53,6 +55,12 @@ te bazezi pe el în producție.
   care nu trece prin panou, fațada `EmailCampaigns::subscribe()`/`unsubscribe()` face
   același lucru programatic. O listă de suprimare (`SuppressedEmail`) are acum și
   propria resursă Filament. Vezi secțiunea „Surse de abonați" de mai jos.
+- **Confirmare dublu opt-in** — când o listă are `requires_confirmation` activ, orice
+  abonat nou cu statusul "neconfirmat" primește automat un email cu un link semnat de
+  confirmare; la click, statusul devine "abonat" și se declanșează automatizările ca la
+  o abonare normală. Subiect/conținut editabile per-listă (cu un text implicit tradus),
+  acțiune manuală de retrimitere, iar abonații neconfirmați sunt excluși din trimiterile
+  de campanie. Vezi secțiunea „Confirmare dublu opt-in" de mai jos.
 
 ## Instalare într-un proiect existent
 
@@ -208,6 +216,25 @@ EmailCampaigns::subscribe($list, new SubscriberData(email: 'client@exemplu.ro', 
 EmailCampaigns::unsubscribe($list, 'client@exemplu.ro');
 ```
 
+## Confirmare dublu opt-in
+
+Când `EmailList::requires_confirmation` este activ (bifa "Necesită confirmare prin dublu
+opt-in" din formularul listei), orice abonat care ajunge pe acea listă cu statusul
+`unconfirmed` — prin import, prin `EmailCampaigns::subscribe(status: SubscriptionStatus::Unconfirmed)`
+sau direct din panou — primește automat un email cu un link semnat de confirmare valabil
+`tracking.signed_url_lifetime_days` zile. La click, statusul devine `subscribed`,
+`subscribed_at` se completează și se declanșează automatizările de tip
+"se abonează la o listă", exact ca la o abonare normală (ambele treceri de status se fac
+prin salvarea pivotului `SubscriberList` ca model, nu printr-un update în masă).
+
+Subiectul și conținutul emailului se editează per-listă (câmpurile apar în formular când
+bifa de confirmare e activă); necompletate, se folosește un text implicit tradus
+(en/ro). În conținut, `{confirmation_url}` este înlocuit cu linkul; dacă îl omiți, linkul
+e adăugat automat la final. Din tab-ul de abonați al unei liste, acțiunea "Retrimite
+confirmarea" retrimite emailul manual pentru un abonat neconfirmat. Abonații
+neconfirmați sunt excluși din trimiterile de campanie (`CampaignRecipientResolver`
+rezolvă doar abonați cu statusul `subscribed`).
+
 ## Ce urmează
 
 În ordine aproximativă după cât de apropiate sunt de ce ar trebui să facă un modul
@@ -215,14 +242,9 @@ complet de campanii email:
 
 - **Mai mulți furnizori ESP** — Postmark, SES, SendGrid, Brevo, Resend. Contractul
   `EspDriver` există deja pentru asta; doar Mailgun e implementat.
-- **Flux de confirmare dublu opt-in** — coloana `EmailList::requires_confirmation`
-  există, dar emailul de confirmare + link-ul de confirmare nu sunt încă legate.
 - **Formular public de abonare încorporabil** — import/export CSV și API-ul programatic
   (`EmailCampaigns::subscribe()`) există deja; rămâne un formular HTML de abonare
   pe care îl poți încorpora pe un site public, cu propriul flux de confirmare.
-- **UI pentru segmente** — segmentele sunt stocate și evaluate (`Segment::matches()`),
-  dar nu există încă o interfață Filament dedicată pentru a le construi; sunt JSON
-  simplu, momentan.
 - **Automatizări cu ramificații** — motorul actual e o listă ordonată, liniară, de
   pași per automatizare. Ramificații/condiții per abonat nu sunt implementate.
 - **Hartă de click-uri, statistici geo/dispozitiv** — evenimentele de click sunt
@@ -258,6 +280,10 @@ complet de campanii email:
   importul/exportul rulează pe un worker de queue separat de procesul web, discul
   trebuie să fie partajat între ele (un disk de rețea/S3), altfel worker-ul nu va găsi
   fișierul încărcat de pe web sau invers.
+- Constructorul de segmente a fost verificat prin teste automate pe logica de bază
+  (`Segment::matches()`, formatul de conditions, serviciul de previzualizare), dar nu a
+  fost verificat vizual într-un browser real (nu există deocamdată un mediu de testare
+  cu browser pentru acest pachet).
 
 ## Traduceri
 
