@@ -55,12 +55,6 @@ te bazezi pe el în producție.
   care nu trece prin panou, fațada `EmailCampaigns::subscribe()`/`unsubscribe()` face
   același lucru programatic. O listă de suprimare (`SuppressedEmail`) are acum și
   propria resursă Filament. Vezi secțiunea „Surse de abonați" de mai jos.
-- **Confirmare dublu opt-in** — când o listă are `requires_confirmation` activ, orice
-  abonat nou cu statusul "neconfirmat" primește automat un email cu un link semnat de
-  confirmare; la click, statusul devine "abonat" și se declanșează automatizările ca la
-  o abonare normală. Subiect/conținut editabile per-listă (cu un text implicit tradus),
-  acțiune manuală de retrimitere, iar abonații neconfirmați sunt excluși din trimiterile
-  de campanie. Vezi secțiunea „Confirmare dublu opt-in" de mai jos.
 
 ## Instalare într-un proiect existent
 
@@ -216,40 +210,6 @@ EmailCampaigns::subscribe($list, new SubscriberData(email: 'client@exemplu.ro', 
 EmailCampaigns::unsubscribe($list, 'client@exemplu.ro');
 ```
 
-## Confirmare dublu opt-in
-
-Când `EmailList::requires_confirmation` este activ (bifa "Necesită confirmare prin dublu
-opt-in" din formularul listei), orice abonat care ajunge pe acea listă cu statusul
-`unconfirmed` — prin import, prin `EmailCampaigns::subscribe(status: SubscriptionStatus::Unconfirmed)`
-sau direct din panou — primește automat un email cu un link semnat de confirmare valabil
-`tracking.signed_url_lifetime_days` zile. La click, statusul devine `subscribed`,
-`subscribed_at` se completează și se declanșează automatizările de tip
-"se abonează la o listă", exact ca la o abonare normală (ambele treceri de status se fac
-prin salvarea pivotului `SubscriberList` ca model, nu printr-un update în masă).
-
-Subiectul și conținutul emailului se editează per-listă (câmpurile apar în formular când
-bifa de confirmare e activă); necompletate, se folosește un text implicit tradus
-(en/ro). În conținut, `{confirmation_url}` este înlocuit cu linkul; dacă îl omiți, linkul
-e adăugat automat la final. Din tab-ul de abonați al unei liste, acțiunea "Retrimite
-confirmarea" retrimite emailul manual pentru un abonat neconfirmat. Abonații
-neconfirmați sunt excluși din trimiterile de campanie (`CampaignRecipientResolver`
-rezolvă doar abonați cu statusul `subscribed`).
-
-## Constructorul de segmente
-
-Din tab-ul "Segments" al unei liste, un segment nou se construiește direct din panou,
-fără a scrie JSON de mână: un grup de reguli combinate ȚI/SAU, iar grupurile între ele
-combinate tot ȚI/SAU — ex. „(etichetă = vip ȚI email termină cu @acme.com) SAU
-(etichetă = lead)". Câmpuri disponibile: `email`, `first_name`, `last_name`, `tags`,
-`subscribed_at` (relativ la data abonării pe *această* listă, operatori înainte/după/
-egal, format `AAAA-LL-ZZ`) și orice `extra_attributes.<cheie>` (alege "Personalizat" ca
-câmp). Sub formular apare o previzualizare live cu numărul de abonați care s-ar potrivi
-chiar acum și primii zece, actualizată la fiecare modificare.
-
-Formatul JSON existent (`Segment::conditions`, un singur grup implicit de reguli) rămâne
-compatibil — `Segment::matches()` înțelege ambele forme — iar segmentele vechi se
-„urcă" automat la forma nouă (cu grupuri) când le editezi din panou.
-
 ## Ce urmează
 
 În ordine aproximativă după cât de apropiate sunt de ce ar trebui să facă un modul
@@ -257,6 +217,8 @@ complet de campanii email:
 
 - **Mai mulți furnizori ESP** — Postmark, SES, SendGrid, Brevo, Resend. Contractul
   `EspDriver` există deja pentru asta; doar Mailgun e implementat.
+- **Flux de confirmare dublu opt-in** — coloana `EmailList::requires_confirmation`
+  există, dar emailul de confirmare + link-ul de confirmare nu sunt încă legate.
 - **Formular public de abonare încorporabil** — import/export CSV și API-ul programatic
   (`EmailCampaigns::subscribe()`) există deja; rămâne un formular HTML de abonare
   pe care îl poți încorpora pe un site public, cu propriul flux de confirmare.

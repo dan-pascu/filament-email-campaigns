@@ -190,10 +190,6 @@ return [
             'title' => "You've been unsubscribed",
             'body' => ':email will no longer receive emails from ":list".',
         ],
-        'confirmed' => [
-            'title' => 'Subscription confirmed',
-            'body' => ':email is now confirmed on ":list". Thanks!',
-        ],
     ],
 
     'enums' => [

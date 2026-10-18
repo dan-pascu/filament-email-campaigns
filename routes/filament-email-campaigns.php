@@ -1,6 +1,5 @@
 <?php
 
-use DanPascu\FilamentEmailCampaigns\Http\Controllers\ConfirmSubscriptionController;
 use DanPascu\FilamentEmailCampaigns\Http\Controllers\DownloadExportController;
 use DanPascu\FilamentEmailCampaigns\Http\Controllers\EspWebhookController;
 use DanPascu\FilamentEmailCampaigns\Http\Controllers\TrackClickController;
@@ -20,10 +19,6 @@ Route::prefix(config('filament-email-campaigns.route.prefix', 'email-campaigns')
     Route::get('unsubscribe/{list}/{subscriber}', UnsubscribeController::class)
         ->middleware('signed')
         ->name('filament-email-campaigns.unsubscribe');
-
-    Route::get('confirm/{list}/{subscriber}', ConfirmSubscriptionController::class)
-        ->middleware('signed')
-        ->name('filament-email-campaigns.confirm');
 
     Route::post('webhooks/{provider}', EspWebhookController::class)
         ->name('filament-email-campaigns.webhooks');
